@@ -1,92 +1,50 @@
-# SoundSync
+# SoundSync | Centralized Audio Management
 
-A centralized audio management system with a real-time web dashboard and background client agents.
+SoundSync is a high-performance, real-time audio distribution system featuring a centralized Web Dashboard and background Client agents. It is designed for multi-channel audio routing with independent control and offline resiliency.
 
-## Architecture
-
-```
-soundServer/
-├── server/                  # Python Flask + SocketIO server
-│   ├── server.py            # Core server, WebSocket events, REST API
-│   ├── database.py          # TOML-based persistence
-│   ├── templates/           # Jinja2 HTML templates
-│   ├── static/              # CSS, JS
-│   ├── media/               # Uploaded audio files (auto-created)
-│   ├── config.toml          # Runtime config (auto-created)
-│   ├── requirements.txt
-│   └── build_server.spec    # PyInstaller spec
-│
-├── client/                  # Python background client
-│   ├── client.py            # Main entry — tray icon, sync, WebSocket
-│   ├── audio_engine.py      # VLC multi-channel audio controller
-│   ├── assets/              # icon.ico, icon.png
-│   ├── client_config.toml   # Persistent UUID + PC name (auto-created)
-│   ├── requirements.txt
-│   └── build_client.spec    # PyInstaller spec
-│
-├── generate_icon.py         # One-time icon asset generator
-├── build.ps1                # Windows build script
-└── build.sh                 # Linux build script
-```
-
-## Prerequisites
-
-- **Python 3.10+**
-- **VLC Media Player** installed on every **client** machine
-  - Windows: https://www.videolan.org/vlc/download-windows.html
-  - Linux: `sudo apt install vlc` or equivalent
+## Key Features
+- **Independent Stereo Routing**: Channel 1 is mapped to the Left speaker; Channel 2 is mapped to the Right speaker.
+- **Isolated Volume Control**: Powered by the Pygame mixer to ensure independent gain per channel.
+- **Offline Resiliency**: Clients automatically persist their playback state and resume immediately on startup, even if the server is unreachable.
+- **Real-time Dashboard**: Glassmorphic Web GUI with live playback status, progress timers, and volume control via WebSockets.
+- **Secure Single-Instance**: Built-in lock to prevent multiple client instances from conflicting.
+- **Universal Build System**: Cross-platform build scripts for Windows (.exe) and Linux.
 
 ## Quick Start
 
-### Server
-```powershell
-cd server
-pip install -r requirements.txt
-python server.py
-```
-Dashboard: http://localhost:6060
-
-### Client
-```powershell
-cd client
-pip install -r requirements.txt
-python client.py
-```
-Look for the SoundSync icon in the system tray.
-
-## Build Standalone Executables
-
-**Windows:**
-```powershell
-.\build.ps1
-```
-
-**Linux:**
+### 1. Installation
+Clone the repository and install dependencies for both components:
 ```bash
-./build.sh
+# Server
+pip install -r server/requirements.txt
+
+# Client
+pip install -r client/requirements.txt
 ```
 
-Output: `server/dist/SoundSync-Server.exe` and `client/dist/SoundSync-Client.exe`
+### 2. Running Locally
+```bash
+# Start Server (on port 6060)
+python server/server.py
 
-> **Note**: VLC must be installed separately on client machines. It is not bundled into the client EXE.
+# Start Client
+python client/client.py
+```
 
-## WebSocket Events Reference
+### 3. Building Executables
+Use the automated build scripts to generate standalone binaries in the `dist/` folders:
+- **Windows**: `.\build.ps1`
+- **Linux**: `./build.sh`
 
-| Event | Direction | Description |
-|:--|:--|:--|
-| `register` | Client → Server | Initial handshake with UUID and PC name |
-| `status_update` | Client → Server | Heartbeat with playback status per channel |
-| `sync_config` | Server → Client | Push media assignments to trigger sync |
-| `cmd_playback` | Server → Client | Play / Pause / Restart a channel |
-| `cmd_volume` | Server → Client | Set volume level 0–100 on a channel |
-| `update_mapping` | Browser → Server | Assign media files to client channels |
+## Technical Architecture
+- **Communication**: Socket.io (WebSockets) for sub-second control latency.
+- **Audio Engine**: Pygame Mixer (Frequency: 44.1kHz, Size: -16bit, Channels: 2).
+- **Storage**: TOML-based configuration for human-readable persistence.
+- **UI**: Vanilla HTML5/CSS3 with Glassmorphism and CSS Grid.
 
-## Configuration Files
-
-Both files are **TOML** format and human-editable:
-
-- `server/config.toml` — Client registry, media library, channel mappings
-- `client/client_config.toml` — Client UUID and hostname
+## Configuration
+- `server/config.toml` — Master client mappings and media metadata.
+- `client/client_config.toml` — Local client identity and cached playback state.
 
 ## Default Port
-**6060** — Change in `server/server.py` if needed.
+**6060** — Optimized to avoid browser security restrictions (ERR_UNSAFE_PORT).

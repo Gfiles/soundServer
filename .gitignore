@@ -1,0 +1,29 @@
+# Build and Distribution
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+
+# Project Specific Data
+server/data.json
+server/media/*
+!server/media/.gitkeep
+client/client_config.toml
+client/media/*
+!client/media/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
