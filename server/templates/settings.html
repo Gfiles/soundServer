@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSync | Configuration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">SOUNDSYNC</div>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/settings" class="active">Configuration</a>
+        </div>
+    </nav>
+
+    <main class="settings-container">
+        <section class="form-group">
+            <h2>Media Library</h2>
+            <div class="media-upload" id="drop-zone">
+                <p>Drag & Drop media files here or click to upload</p>
+                <input type="file" id="file-input" hidden multiple accept="audio/*,video/*">
+                <button class="btn-primary" style="margin-top: 1rem;">Select Files</button>
+            </div>
+            <div id="media-list" style="display: grid; gap: 0.5rem;">
+                <!-- Media items -->
+            </div>
+        </section>
+
+        <section class="form-group">
+            <h2>Client Mapping</h2>
+            <div id="client-mapping-list">
+                <!-- Client mapping forms -->
+            </div>
+        </section>
+    </main>
+
+    <template id="client-config-template">
+        <div class="client-config-item" style="margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--glass-border);">
+            <h3 class="config-client-name">Client Name</h3>
+            <div class="channel-configs" style="margin-top: 1rem; display: grid; gap: 1rem;">
+                <!-- Channel selects -->
+            </div>
+            <button class="btn-save btn-primary" style="margin-top: 1rem;">Apply Configuration</button>
+        </div>
+    </template>
+
+    <script src="{{ url_for('static', filename='settings.js') }}"></script>
+</body>
+</html>

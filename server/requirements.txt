@@ -1,0 +1,5 @@
+flask
+flask-socketio
+waitress
+python-dotenv
+toml

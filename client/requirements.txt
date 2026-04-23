@@ -1,0 +1,7 @@
+pygame
+pystray
+python-socketio[client]
+requests
+Pillow
+python-dotenv
+toml

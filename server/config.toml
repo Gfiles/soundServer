@@ -1,0 +1,48 @@
+# SoundSync Configuration File
+# This file stores client mappings and media metadata
+
+[settings]
+port = 6060
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979]
+name = "gavin-lg"
+status = "online"
+
+[media.e9b1e763-c072-4d3f-932b-597c10a6c6f5]
+name = "Peppa-avião-instapoint - 3min.mp3"
+filename = "Peppa-avião-instapoint - 3min.mp3"
+hash = "a5833726b64142ecd8fb9bcbe7730953b8e641635b47c1dc8a393821aae7918e"
+
+[media.ac14607f-b137-4d8b-88a3-82bf2ff2c3e9]
+name = "sala-4-festival-of-lanterns-full-version-chinese-music-traditional-modern-369381.mp3"
+filename = "sala-4-festival-of-lanterns-full-version-chinese-music-traditional-modern-369381.mp3"
+hash = "12913d9af7453609334ffaee20cb923b24997271cf200d40c84dcc0f9d7db81c"
+
+[media.c978e1b8-4e87-4cc9-850a-7c8cb7da2633]
+name = "Ouro_Maracana.mp3"
+filename = "Ouro_Maracana.mp3"
+hash = "5bec3f70d56c4975ad9f94bfe26cbbb2b4a3b45259d373d5b8f4eb548f238b8a"
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979.channels]
+1 = "ac14607f-b137-4d8b-88a3-82bf2ff2c3e9"
+2 = "c978e1b8-4e87-4cc9-850a-7c8cb7da2633"
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979.volumes]
+1 = 100
+2 = 100
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979.status_data]
+client_id = "e4b283ec-9660-4961-94ee-69161e73d979"
+status = "online"
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979.status_data.channels.1]
+playing = 1
+volume = 6
+time = 55927
+duration = 163867
+
+[clients.e4b283ec-9660-4961-94ee-69161e73d979.status_data.channels.2]
+playing = 1
+volume = 6
+time = 55904
+duration = 227916

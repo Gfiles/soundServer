@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundSync | Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">SOUNDSYNC</div>
+        <div class="nav-links">
+            <a href="/" class="active">Dashboard</a>
+            <a href="/settings">Configuration</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="dashboard-grid" id="client-grid">
+            <!-- Cards will be injected here -->
+        </div>
+    </main>
+
+    <template id="client-card-template">
+        <div class="client-card" data-id="">
+            <div class="card-header">
+                <div class="client-info">
+                    <h3 class="client-name">Loading...</h3>
+                    <div class="status-badge status-offline">Offline</div>
+                </div>
+            </div>
+            <div class="channel-list">
+                <!-- Channels injected here -->
+            </div>
+        </div>
+    </template>
+
+    <template id="channel-item-template">
+        <div class="channel-item" data-channel="">
+            <div class="channel-header-stack">
+                <div class="channel-header">
+                    <span>Channel <span class="ch-num">1</span></span>
+                </div>
+                <span class="media-name">No Media</span>
+                <span class="media-time">00:00 / 00:00</span>
+            </div>
+            <div class="controls">
+                <button class="btn-play">Play</button>
+                <button class="btn-pause">Pause</button>
+                <button class="btn-restart">Restart</button>
+            </div>
+            <input type="range" min="0" max="100" value="100" class="volume-slider">
+        </div>
+    </template>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

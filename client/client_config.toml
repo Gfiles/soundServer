@@ -1,0 +1,18 @@
+client_id = "e4b283ec-9660-4961-94ee-69161e73d979"
+pc_name = "gavin-lg"
+
+[last_state.volumes]
+1 = 100
+2 = 100
+
+[last_state.channels.1]
+media_id = "ac14607f-b137-4d8b-88a3-82bf2ff2c3e9"
+filename = "sala-4-festival-of-lanterns-full-version-chinese-music-traditional-modern-369381.mp3"
+hash = "12913d9af7453609334ffaee20cb923b24997271cf200d40c84dcc0f9d7db81c"
+volume = 100
+
+[last_state.channels.2]
+media_id = "c978e1b8-4e87-4cc9-850a-7c8cb7da2633"
+filename = "Ouro_Maracana.mp3"
+hash = "5bec3f70d56c4975ad9f94bfe26cbbb2b4a3b45259d373d5b8f4eb548f238b8a"
+volume = 100
