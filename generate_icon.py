@@ -1,25 +1,30 @@
-"""
-generate_icon.py
-Run this once to produce client/assets/icon.ico from the source PNG.
-Requires Pillow: pip install Pillow
-"""
 from PIL import Image
 import os
 
 SRC = os.path.join(os.path.dirname(__file__), 'soundsync_icon.png')
-DEST_DIR = os.path.join(os.path.dirname(__file__), 'client', 'assets')
-DEST_ICO = os.path.join(DEST_DIR, 'icon.ico')
-DEST_PNG = os.path.join(DEST_DIR, 'icon.png')
+ICO_PATH = os.path.join(os.path.dirname(__file__), 'icon.ico')
+PNG_PATH = os.path.join(os.path.dirname(__file__), 'icon.png')
 
-os.makedirs(DEST_DIR, exist_ok=True)
+if not os.path.exists(SRC):
+    # Fallback if source icon is missing: generate a simple blue circle
+    from PIL import ImageDraw
+    img = Image.new('RGBA', (256, 256), (15, 23, 42, 0))
+    draw = ImageDraw.Draw(img)
+    draw.ellipse([20, 20, 236, 236], fill=(56, 189, 248, 255))
+else:
+    img = Image.open(SRC).convert('RGBA')
 
-img = Image.open(SRC).convert('RGBA')
-
-# Save multi-resolution ICO (Windows standard sizes)
+# Save multi-resolution ICO
 sizes = [(16,16), (32,32), (48,48), (64,64), (128,128), (256,256)]
-img.save(DEST_ICO, format='ICO', sizes=sizes)
-print(f"ICO saved: {DEST_ICO}")
+img.save(ICO_PATH, format='ICO', sizes=sizes)
+print(f"ICO saved: {ICO_PATH}")
 
-# Also save a 64x64 PNG for the in-process pystray tray icon
-img.resize((64, 64), Image.LANCZOS).save(DEST_PNG, format='PNG')
-print(f"PNG saved: {DEST_PNG}")
+# Save PNG for UI/Tray
+img.resize((64, 64), Image.LANCZOS).save(PNG_PATH, format='PNG')
+print(f"PNG saved: {PNG_PATH}")
+
+# Copy to client/assets for runtime access
+assets_dir = os.path.join(os.path.dirname(__file__), 'client', 'assets')
+os.makedirs(assets_dir, exist_ok=True)
+import shutil
+shutil.copy2(PNG_PATH, os.path.join(assets_dir, 'icon.png'))

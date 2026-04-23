@@ -13,12 +13,6 @@ from pystray import Icon, Menu, MenuItem
 from PIL import Image
 from audio_engine import audio_engine
 
-# ── VLC Pre-flight check ──────────────────────────────────────────────────────
-try:
-    import vlc
-    _vlc_ok = True
-except Exception:
-    _vlc_ok = False
 
 def ensure_singleton():
     """Ensure only one instance of the client is running using a local socket."""
@@ -31,24 +25,8 @@ def ensure_singleton():
         print("Error: Another instance of SoundSync Client is already running.")
         sys.exit(1)
 
-def _vlc_error_and_exit():
-    """Show a user-facing error if VLC is not installed, then exit."""
-    try:
-        import tkinter as tk
-        from tkinter import messagebox
-        root = tk.Tk(); root.withdraw()
-        messagebox.showerror(
-            "SoundSync – VLC Missing",
-            "VLC Media Player is not installed or not found on this system.\n\n"
-            "Please install VLC from https://www.videolan.org/ and restart SoundSync."
-        )
-        root.destroy()
-    except Exception:
-        print("ERROR: VLC Media Player is not installed. "
-              "Get it at https://www.videolan.org/")
-    sys.exit(1)
 
-SERVER_URL = "http://localhost:6060" # Change to real IP in production
+SERVER_URL = "http://localhost:6060" # Default, updated at runtime
 CONFIG_FILE = 'client_config.toml'
 MEDIA_DIR = 'media'
 
@@ -57,6 +35,10 @@ class SoundSyncClient:
         self.config = self.load_config()
         self.client_id = self.config['client_id']
         self.pc_name = self.config['pc_name']
+        
+        global SERVER_URL
+        SERVER_URL = self.config.get('server_url', "http://localhost:6060")
+        
         self.sio = socketio.Client()
         self.setup_sio()
         
@@ -66,18 +48,47 @@ class SoundSyncClient:
         # Resume immediately for offline support
         self.resume_last_state()
 
+    def prompt_for_server_ip(self):
+        """Show a GUI popup to ask for the server IP on first run."""
+        import tkinter as tk
+        from tkinter import simpledialog
+        
+        root = tk.Tk()
+        root.withdraw()
+        
+        # Bring to front
+        root.attributes("-topmost", True)
+        
+        ip = simpledialog.askstring(
+            "SoundSync Setup", 
+            "Enter the Server IP address (e.g., 192.168.1.50):",
+            initialvalue="localhost"
+        )
+        root.destroy()
+        
+        if not ip:
+            print("Setup cancelled. Exiting.")
+            sys.exit(0)
+            
+        return f"http://{ip}:6060"
+
     def load_config(self):
         if os.path.exists(CONFIG_FILE):
             config = toml.load(CONFIG_FILE)
             # Ensure defaults for missing keys
             if 'client_id' not in config: config['client_id'] = str(uuid.uuid4())
             if 'pc_name' not in config: config['pc_name'] = socket.gethostname()
+            if 'server_url' not in config: config['server_url'] = "http://localhost:6060"
             if 'last_state' not in config: config['last_state'] = {'channels': {}, 'volumes': {}}
             return config
         else:
+            # First run: Ask for IP
+            server_url = self.prompt_for_server_ip()
+            
             new_config = {
                 'client_id': str(uuid.uuid4()),
                 'pc_name': socket.gethostname(),
+                'server_url': server_url,
                 'last_state': {'channels': {}, 'volumes': {}}
             }
             self.save_config(new_config)
@@ -220,10 +231,6 @@ def on_exit(icon, item):
 if __name__ == "__main__":
     # Ensure only one instance
     ensure_singleton()
-
-    # Gate on VLC before anything else
-    if not _vlc_ok:
-        _vlc_error_and_exit()
 
     client = SoundSyncClient()
 

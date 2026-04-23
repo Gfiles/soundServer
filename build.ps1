@@ -11,9 +11,10 @@ if (-not (Get-Command pyinstaller -ErrorAction SilentlyContinue)) {
     pip install pyinstaller
 }
 
-# Generate icon assets
-Write-Host "`n[1/4] Generating icon assets..." -ForegroundColor Green
+# Generate icon and version assets
+Write-Host "`n[1/4] Generating assets..." -ForegroundColor Green
 python generate_icon.py
+python version_info.py
 
 # Install server dependencies
 Write-Host "`n[2/4] Installing server dependencies..." -ForegroundColor Green

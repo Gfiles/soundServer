@@ -1,9 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 # SoundSync Client - PyInstaller Build Spec
 # Run with: pyinstaller build_client.spec
-#
-# NOTE: VLC must be installed on the target machine.
-# This build does NOT bundle VLC to keep the binary small.
 
 block_cipher = None
 
@@ -50,5 +47,6 @@ exe = EXE(
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,   # No console window — runs silently in system tray
-    icon='assets/icon.ico',
+    icon='../icon.ico',
+    version='../version_info.txt',
 )

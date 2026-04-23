@@ -20,6 +20,7 @@ a = Analysis(
         'toml',
         'engineio',
         'socketio',
+        'pystray._win32',
     ],
     hookspath=[],
     runtime_hooks=[],
@@ -46,6 +47,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,   # Keep console visible so admin can see logs
-    icon=None,
+    console=False,   # Run silently in system tray
+    icon='../icon.ico',
+    version='../version_info.txt',
 )

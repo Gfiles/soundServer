@@ -1,6 +1,10 @@
 import os
 import uuid
 import hashlib
+import threading
+import webbrowser
+import pystray
+from PIL import Image
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit, join_room
 from database import db
@@ -8,8 +12,8 @@ from database import db
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'soundsync_secret'
 app.config['UPLOAD_FOLDER'] = 'media'
-# threading mode: no eventlet/gevent required, fully compatible with Waitress
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+# production mode: eventlet handles both HTTP and WebSocket efficiently
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 # Ensure media folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -114,18 +118,47 @@ def handle_mapping(data):
             })
         print(f"Updated mapping for {client_id}")
 
+def create_tray_image():
+    icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'icon.png')
+    if os.path.exists(icon_path):
+        return Image.open(icon_path)
+    # Fallback
+    img = Image.new('RGB', (64, 64), (15, 23, 42))
+    return img
+
+def on_open_dashboard(icon, item):
+    webbrowser.open("http://localhost:6060")
+
+def on_open_settings(icon, item):
+    webbrowser.open("http://localhost:6060/settings")
+
+def on_exit(icon, item):
+    icon.stop()
+    os._exit(0)
+
 if __name__ == '__main__':
     print("Starting SoundSync Server on http://0.0.0.0:6060")
-    # NOTE: Waitress does not support WebSocket upgrades (it is WSGI-only).
-    # socketio.run() with async_mode='threading' is the correct approach:
-    # it uses Werkzeug's multi-threaded server which handles both HTTP and
-    # WebSocket on the same port with zero external dependencies.
-    socketio.run(
+    
+    # Run server in background thread (Production mode with eventlet)
+    server_thread = threading.Thread(target=lambda: socketio.run(
         app,
         host='0.0.0.0',
         port=6060,
         debug=False,
-        allow_unsafe_werkzeug=True,   # Required for Flask-SocketIO >= 5 without eventlet/gevent
-        use_reloader=False,           # Prevent double-start
+        use_reloader=False,
         log_output=True
-    )
+    ), daemon=True)
+    server_thread.start()
+
+    # Open dashboard in browser
+    threading.Timer(1.5, lambda: webbrowser.open("http://localhost:6060")).start()
+
+    # System Tray (Main Thread)
+    tray = pystray.Icon("SoundSyncServer", create_tray_image(), "SoundSync Server", menu=pystray.Menu(
+        pystray.MenuItem("Open Dashboard", on_open_dashboard),
+        pystray.MenuItem("Settings", on_open_settings),
+        pystray.MenuItem("Exit", on_exit)
+    ))
+    
+    print("SoundSync Server is running in the system tray.")
+    tray.run()
